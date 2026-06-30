@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planos de Aula — Natação Adultos</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --water-deep: #0a2540;
+    --water-mid: #1a4a7a;
+    --water-light: #2d7dd2;
+    --water-surface: #e8f4fd;
+    --accent: #00b4d8;
+    --accent-glow: #90e0ef;
+    --beginner: #2ecc71;
+    --beginner-bg: #eafaf1;
+    --inter: #f39c12;
+    --inter-bg: #fef9e7;
+    --advanced: #e74c3c;
+    --advanced-bg: #fdedec;
+    --text: #1a2332;
+    --text-light: #4a5568;
+    --border: #d1e8f5;
+    --white: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--water-deep);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--water-deep) 0%, var(--water-mid) 100%);
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-glow), var(--accent));
+  }
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent-glow);
+    margin-bottom: 0.75rem;
+  }
+  header h1 { font-size: 2rem; font-weight: 700; color: var(--white); line-height: 1.2; margin-bottom: 0.5rem; }
+  header p { color: #a8c8e8; font-size: 0.95rem; font-weight: 300; }
+
+  .weeks-nav {
+    background: var(--water-mid);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid rgba(0,180,216,0.3);
+  }
+  .weeks-nav::-webkit-scrollbar { display: none; }
+  .week-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    color: #a8c8e8;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+  }
+  .week-btn:hover { background: rgba(0,180,216,0.2); border-color: var(--accent); color: var(--white); }
+  .week-btn.active { background: var(--accent); border-color: var(--accent); color: var(--water-deep); font-weight: 700; }
+  .week-btn .week-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; opacity: 0.7; }
+  .week-btn.active .week-label { opacity: 0.8; }
+
+  main {
+    background: #f5f9fc;
+    min-height: calc(100vh - 180px);
+    padding: 2rem 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .week-panel { display: none; }
+  .week-panel.active { display: block; }
+
+  .week-header {
+    background: linear-gradient(135deg, var(--water-deep), var(--water-mid));
+    color: white;
+    border-radius: 14px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .week-header::after {
+    content: attr(data-icon);
+    position: absolute;
+    right: 1.5rem; top: 50%;
+    transform: translateY(-50%);
+    font-size: 3.5rem;
+    opacity: 0.15;
+  }
+  .week-num { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.15em; color: var(--accent-glow); text-transform: uppercase; margin-bottom: 0.3rem; }
+  .week-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .week-dates { font-size: 0.85rem; color: #a8c8e8; font-weight: 300; }
+  .week-goal {
+    background: rgba(0,180,216,0.15);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 0.6rem 1rem;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    color: #e0f4ff;
+    line-height: 1.5;
+  }
+
+  .pool-note {
+    background: rgba(0,180,216,0.08);
+    border: 1px solid rgba(0,180,216,0.2);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: #b0d8f0;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .structure-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+  }
+  .struct-item { background: white; border-radius: 10px; padding: 0.9rem; text-align: center; border: 1.5px solid var(--border); }
+  .struct-time { font-family: 'DM Mono', monospace; font-size: 1.1rem; font-weight: 500; color: var(--water-light); display: block; }
+  .struct-label { font-size: 0.72rem; color: var(--text-light); margin-top: 0.2rem; display: block; }
+
+  .levels-container { display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1.75rem; }
+
+  .level-card { background: white; border-radius: 14px; border: 1.5px solid var(--border); overflow: hidden; }
+  .level-header { padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; user-select: none; transition: background 0.15s; }
+  .level-header:hover { background: #fafeff; }
+  .level-badge { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  .badge-beginner { background: var(--beginner-bg); }
+  .badge-inter { background: var(--inter-bg); }
+  .badge-advanced { background: var(--advanced-bg); }
+  .level-info { flex: 1; }
+  .level-name { font-weight: 600; font-size: 0.95rem; color: var(--text); }
+  .level-desc { font-size: 0.78rem; color: var(--text-light); margin-top: 0.1rem; }
+  .level-chevron { color: var(--text-light); transition: transform 0.2s; font-size: 0.9rem; }
+  .level-card.open .level-chevron { transform: rotate(180deg); }
+  .level-body { display: none; padding: 0 1.25rem 1.25rem; border-top: 1.5px solid var(--border); }
+  .level-card.open .level-body { display: block; }
+
+  .phase-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-light);
+    margin: 1rem 0 0.6rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .exercise-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+  .exercise-list li {
+    font-size: 0.87rem;
+    color: var(--text);
+    padding: 0.55rem 0.75rem;
+    background: #f8fbff;
+    border-radius: 7px;
+    border-left: 3px solid var(--border);
+    line-height: 1.5;
+  }
+  .exercise-list li strong { color: var(--water-mid); font-weight: 600; }
+  .exercise-list.beginner li { border-left-color: var(--beginner); background: var(--beginner-bg); }
+  .exercise-list.inter li { border-left-color: var(--inter); background: var(--inter-bg); }
+  .exercise-list.advanced li { border-left-color: var(--advanced); background: var(--advanced-bg); }
+
+  .video-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+    background: rgba(26,115,232,0.08);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.15s;
+  }
+  .video-link:hover { background: rgba(26,115,232,0.16); }
+  .video-link::before { content: '▶'; font-size: 0.65rem; }
+
+  .tip-box {
+    background: #fffbf0;
+    border: 1.5px solid #f0d080;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-top: 1.25rem;
+  }
+  .tip-box-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #b8860b; margin-bottom: 0.6rem; }
+  .tip-box ul { list-style: none; display: flex; flex-direction: column; gap: 0.35rem; }
+  .tip-box ul li { font-size: 0.87rem; color: #5a4a1a; padding-left: 1.2rem; position: relative; line-height: 1.5; }
+  .tip-box ul li::before { content: '•'; position: absolute; left: 0.3rem; color: #d4a017; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.5rem; }
+    .structure-bar { grid-template-columns: repeat(2, 1fr); }
+    .week-header::after { display: none; }
+    main { padding: 1.25rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">Academia — Setor de Natação</div>
+  <h1>Planos de Aula Semanais</h1>
+  <p>Turmas Adultas · Todos os Níveis · 2026 · Piscina 18m</p>
+</header>
+
+<nav class="weeks-nav">
+  <button class="week-btn active" onclick="showWeek(0)">Semana 1<span class="week-label">Salto & Viradas</span></button>
+  <button class="week-btn" onclick="showWeek(1)">Semana 2<span class="week-label">Crawl</span></button>
+  <button class="week-btn" onclick="showWeek(2)">Semana 3<span class="week-label">Peito</span></button>
+  <button class="week-btn" onclick="showWeek(3)">Semana 4<span class="week-label">Borboleta</span></button>
+  <button class="week-btn" onclick="showWeek(4)">Semana 5<span class="week-label">Costas</span></button>
+</nav>
+
+<main>
+
+<!-- ============================== SEMANA 1 ============================== -->
+<div class="week-panel active" id="week-0">
+  <div class="week-header" data-icon="🌊">
+    <div class="week-num">Semana 1 · 29 Jun – 04 Jul 2026</div>
+    <div class="week-title">Salto & Viradas</div>
+    <div class="week-dates">Início do cronograma temático</div>
+    <div class="week-goal"><strong>Objetivo:</strong> Desenvolver a entrada na água com segurança e eficiência, e executar viradas simples (aberta) e olímpica (rolamento), adaptando a exigência ao nível de cada aluno.</div>
+    <div class="pool-note">🏊 Piscina 18m — referências de distância: meia piscina = 9m · piscina inteira = 18m · 2 piscinas = 36m</div>
+  </div>
+
+  <div class="structure-bar">
+    <div class="struct-item"><span class="struct-time">10'</span><span class="struct-label">Aquecimento</span></div>
+    <div class="struct-item"><span class="struct-time">15'</span><span class="struct-label">Técnica principal</span></div>
+    <div class="struct-item"><span class="struct-time">20'</span><span class="struct-label">Foco da semana</span></div>
+    <div class="struct-item"><span class="struct-time">5'</span><span class="struct-label">Volta à calma</span></div>
+  </div>
+
+  <div class="levels-container">
+
+    <div class="level-card open">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-beginner">🟢</div>
+        <div class="level-info"><div class="level-name">Iniciante</div><div class="level-desc">Aluno que não sabe flutuar ou está nos primeiros meses</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Aquecimento (estagiário conduz)</div>
+        <ul class="exercise-list beginner">
+          <li><strong>Caminhada na raia</strong> — andar de ponta a ponta (18m) sentindo a resistência da água; repetir 2×, variando o ritmo no retorno<br><a class="video-link" href="https://www.youtube.com/watch?v=avKcfys-LrQ" target="_blank">5 exercícios para iniciantes — Canal Nada Melhor</a></li>
+          <li><strong>Respiração ritmada na borda</strong> — segurar a borda, rosto dentro d'água, soltar o ar pelo nariz; 10 repetições aumentando o tempo de apneia a cada série</li>
+          <li><strong>Flutuação estática</strong> — professor ou estagiário apoia as costas; aluno solta o corpo e tenta flutuar por 5, 10 e 15 segundos progressivamente</li>
+          <li><strong>Movimentação de pernas na borda</strong> — sentado na borda, pernas para dentro d'água, realizar chutes alternados e simultâneos para habituar o tônus</li>
+        </ul>
+
+        <div class="phase-title">Foco — Salto (professor conduz)</div>
+        <ul class="exercise-list beginner">
+          <li><strong>Entrada pés primeiro</strong> — aluno salta de pé da borda, objetivo principal é perder o medo da entrada; estagiário recebe dentro d'água<br><a class="video-link" href="https://www.youtube.com/watch?v=0jncvutp_0E" target="_blank">Como aprender a saltar na piscina — Canal Nada Mais</a></li>
+          <li><strong>Queda controlada de cócoras</strong> — agachar na borda e rolar para dentro d'água com as mãos na parede; peso vai para frente de forma segura</li>
+          <li><strong>Mergulho raso com apoio</strong> — partir da posição agachada, jogar o corpo para frente com os braços estendidos; estagiário posicionado a 1m para dar confiança</li>
+          <li><strong>Mergulho de joelhos</strong> — ajoelhar na borda e se inclinar para frente até entrar na água com os braços; fase de transição entre queda e mergulho real<br><a class="video-link" href="https://www.youtube.com/watch?v=_l2Vt5G1f-U" target="_blank">Aprenda a mergulhar de cabeça passo a passo</a></li>
+          <li><strong>Repetição com foco na posição dos braços</strong> — braços colados às orelhas na entrada; professor observa e corrige antes do próximo salto</li>
+        </ul>
+
+        <div class="phase-title">Foco — Virada Aberta (professor conduz)</div>
+        <ul class="exercise-list beginner">
+          <li><strong>Toque na parede + afastamento</strong> — chegar caminhando, tocar a parede com as duas mãos, dobrar os joelhos, colocar os pés e se afastar; repetir 5×</li>
+          <li><strong>Posição de impulso parado</strong> — na parede, dobrar os joelhos e simular o impulso; sentir a força gerada pelas pernas antes de fazê-lo nadando</li>
+          <li><strong>Nadar 9m + virada + deslize</strong> — sair da metade da piscina, chegar na parede, virar, impulsionar e deslizar o máximo; foco no deslize, não na velocidade</li>
+          <li><strong>Contagem dos deslizes</strong> — ver quantos metros o aluno desliza após o impulso; estimular a melhorar essa distância a cada tentativa</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-inter">🟡</div>
+        <div class="level-info"><div class="level-name">Intermediário</div><div class="level-desc">Nada pelo menos um nado, mas sem domínio técnico completo</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Aquecimento</div>
+        <ul class="exercise-list inter">
+          <li><strong>2×18m nado livre leve</strong> — ritmo confortável, foco em alongar a braçada e respirar com calma</li>
+          <li><strong>2×18m kick de pernas com prancha</strong> — ativando musculatura para o trabalho de impulso e virada</li>
+          <li><strong>Exercício de streamline parado</strong> — na borda, simular a posição de flecha (braços colados à cabeça, mãos sobrepostas) por 3×15s</li>
+        </ul>
+
+        <div class="phase-title">Foco — Salto Mergulhado</div>
+        <ul class="exercise-list inter">
+          <li><strong>Mergulho de borda em pé</strong> — posição de blocos adaptada (mãos nos pés), jogar o corpo para frente; trabalhar extensão completa na entrada<br><a class="video-link" href="https://www.youtube.com/watch?v=kpv48bStSEY" target="_blank">Como aprender a mergulhar — Canal Nada Melhor</a></li>
+          <li><strong>Correção de entrada com estagiário</strong> — estagiário observa do lado e aponta se o aluno "empata" os braços, curva o pescoço ou dobra os joelhos na entrada</li>
+          <li><strong>Saída de bloco simulada</strong> — agachar na borda com os pés para fora, simular posição de largada; repetir 4× corrigindo postura a cada vez</li>
+          <li><strong>Mergulho + nadar 18m</strong> — sair da borda e nadar uma piscina sem parar; testar o ganho de impulso inicial</li>
+          <li><strong>Variação de entrada</strong> — tentar reduzir o splash na entrada; quem entrar com menos respingo "vence"</li>
+        </ul>
+
+        <div class="phase-title">Foco — Virada Aberta Técnica</div>
+        <ul class="exercise-list inter">
+          <li><strong>4×18m com virada</strong> — foco em tocar firme, puxar o corpo, colocar os pés na parede, empurrar e deslizar em streamline<br><a class="video-link" href="https://www.youtube.com/watch?v=0bHQcswu2Sc" target="_blank">Como aprender a virada olímpica — YouTube</a></li>
+          <li><strong>Deslize de costas pós-virada</strong> — após o impulso, manter o corpo esticado na posição de flecha pelo maior tempo possível antes de remar</li>
+          <li><strong>Contagem de braçadas de chegada</strong> — treinar perceber quantas braçadas faltam para a parede e ajustar o ciclo para não chegar nem longe demais nem colado</li>
+          <li><strong>Chegada sem olhar</strong> — praticar contar as braçadas para não precisar levantar a cabeça ao se aproximar da parede</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-advanced">🔴</div>
+        <div class="level-info"><div class="level-name">Avançado</div><div class="level-desc">Domina mais de um nado, boa resistência e técnica</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Aquecimento</div>
+        <ul class="exercise-list advanced">
+          <li><strong>4×18m progressivo</strong> — saindo a 60% e chegando a 85% no último trecho; não parar entre as séries</li>
+          <li><strong>2×18m drill de pernas variado</strong> — alternando pernas de crawl e borboleta a cada 9m</li>
+          <li><strong>Streamline subaquático</strong> — empurrar da parede e tentar deslizar o máximo sem nadar; medir a distância atingida</li>
+        </ul>
+
+        <div class="phase-title">Foco — Saída de Bloco</div>
+        <ul class="exercise-list advanced">
+          <li><strong>Saída com sinal de reação</strong> — professor dá o sinal (palma, apito), aluno trabalha o reflexo; competir com colega de raia<br><a class="video-link" href="https://www.youtube.com/watch?v=nH06IiUhyxs" target="_blank">Como aprender a saltar na natação — Canal Nada Mais</a></li>
+          <li><strong>Entrada perfurada</strong> — treinar entrar pela mesma abertura dos braços, corpo retilíneo, mínimo splash; estagiário cronometra tempo até o primeiro ciclo de braços</li>
+          <li><strong>Impulso subaquático dolphin kick</strong> — após a entrada, 5–7 pedaladas de borboleta subaquáticas antes de emergir; medir qual distância é atingida</li>
+          <li><strong>Comparativo de saída</strong> — 3 saídas com borda vs 3 com agacho; o aluno percebe a diferença de impulso e ajuste de posição</li>
+        </ul>
+
+        <div class="phase-title">Foco — Virada Olímpica (Rolamento)</div>
+        <ul class="exercise-list advanced">
+          <li><strong>6×18m com virada olímpica</strong> — foco em manter velocidade na chegada, não desacelerar antes da parede<br><a class="video-link" href="https://www.youtube.com/watch?v=0bHQcswu2Sc" target="_blank">Tutorial virada olímpica — YouTube</a></li>
+          <li><strong>Drill de rolamento isolado</strong> — na raia rasa, praticar apenas o giro (cambalhota) sem sair nadando; 10 repetições</li>
+          <li><strong>Impulso + dolphin kick subaquático</strong> — treinar aproveitar a fase subaquática pós-virada (5–7 pedaladas) antes de iniciar o nado</li>
+          <li><strong>Virada às cegas</strong> — nadar com o estagiário avisando oralmente quantas braçadas faltam; treinar o timing sem olhar para a parede</li>
+          <li><strong>Simulação de prova</strong> — 2×36m com saída de bloco + virada em cada piscina; professor cronometra e compara os tempos</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <div class="tip-box-title">💡 Dicas Professor & Estagiário</div>
+    <ul>
+      <li>Iniciantes com medo de saltar: nunca force. Progrida com confiança — pés primeiro → agachado → joelhos → mergulho de pé.</li>
+      <li>Estagiário pode entrar na água e ficar a 1m do aluno para recebê-lo nos primeiros saltos. Isso reduz o medo em 80%.</li>
+      <li>Para turmas mistas: peça que avançados façam séries de virada enquanto você acompanha iniciantes no salto — estagiário supervisiona os avançados.</li>
+      <li>Na virada aberta, o erro mais comum do iniciante é se afastar da parede antes de colocar os pés. Corrija isso primeiro, antes de qualquer outra coisa.</li>
+      <li>Piscina de 18m: nos exercícios com meias piscinas, use o bloco ou um cone flutuante para marcar o ponto de partida a 9m.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================== SEMANA 2: CRAWL ============================== -->
+<div class="week-panel" id="week-1">
+  <div class="week-header" data-icon="💨">
+    <div class="week-num">Semana 2 · 2026</div>
+    <div class="week-title">Nado Crawl</div>
+    <div class="week-dates">Foco em braçada, respiração lateral e coordenação</div>
+    <div class="week-goal"><strong>Objetivo:</strong> Aprimorar o crawl em todos os níveis — do aluno que ainda bate os braços sem rotação ao avançado que quer otimizar distância por braçada e posição do corpo.</div>
+    <div class="pool-note">🏊 Piscina 18m — séries longas: 2×18m = 36m · 4×18m = 72m · pirâmide adaptada ao comprimento</div>
+  </div>
+
+  <div class="structure-bar">
+    <div class="struct-item"><span class="struct-time">10'</span><span class="struct-label">Aquecimento</span></div>
+    <div class="struct-item"><span class="struct-time">10'</span><span class="struct-label">Drill técnico</span></div>
+    <div class="struct-item"><span class="struct-time">25'</span><span class="struct-label">Foco crawl</span></div>
+    <div class="struct-item"><span class="struct-time">5'</span><span class="struct-label">Volta à calma</span></div>
+  </div>
+
+  <div class="levels-container">
+
+    <div class="level-card open">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-beginner">🟢</div>
+        <div class="level-info"><div class="level-name">Iniciante</div><div class="level-desc">Nunca nadou crawl ou tem dificuldade com respiração lateral</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Exercícios de Base</div>
+        <ul class="exercise-list beginner">
+          <li><strong>Respiração lateral parado</strong> — na borda, cabeça na água, rodar para respirar sem levantar; 15 repetições para cada lado; estagiário corrige se o aluno levanta demais<br><a class="video-link" href="https://www.youtube.com/watch?v=8ZLIyO_GrDQ" target="_blank">Respiração do crawl — erros e exercícios (Canal Nada Mais)</a></li>
+          <li><strong>Pernas com prancha</strong> — 4×9m, foco em pernas estendidas, tornozelos soltos e pés levemente voltados para dentro</li>
+          <li><strong>Pernas com prancha 18m</strong> — quando o aluno ganhar confiança, aumentar para piscina inteira sem parar; descanso de 30s</li>
+          <li><strong>Braçada com flutuador nas pernas</strong> — 2×9m, aluno foca apenas nos braços e respira quando quiser; tirar a preocupação com as pernas</li>
+          <li><strong>Flutuação em posição de crawl</strong> — aluno deita de bruços, braços estendidos à frente, apenas flutua; perceber a posição horizontal do corpo</li>
+        </ul>
+
+        <div class="phase-title">Progressão do Crawl</div>
+        <ul class="exercise-list beginner">
+          <li><strong>Drill "um braço só"</strong> — 9m com um braço e prancha no outro; respirar para o lado do braço ativo; repetir dos dois lados<br><a class="video-link" href="https://www.youtube.com/watch?v=BIeSvExqGuA" target="_blank">Primeiros exercícios para iniciantes na natação</a></li>
+          <li><strong>Crawl completo curto</strong> — 4×9m com pausa para respirar quando precisar; estagiário acompanha na borda dando feedback visual</li>
+          <li><strong>Crawl 18m com paradas</strong> — tentar completar a piscina inteira, parando na metade se necessário; objetivo é chegar sem parar ao fim da semana</li>
+          <li><strong>Contagem de respirações</strong> — tentar respirar a cada 2 braçadas (mais fácil); quando conseguir, progredir para a cada 3</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-inter">🟡</div>
+        <div class="level-info"><div class="level-name">Intermediário</div><div class="level-desc">Nada crawl mas sem rotação de quadril ou respiração irregular</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Drills Técnicos</div>
+        <ul class="exercise-list inter">
+          <li><strong>Drill "dedo na coxa"</strong> — na saída da água, passar o polegar rente à coxa; trabalha trajetória do cotovelo alto<br><a class="video-link" href="https://www.youtube.com/watch?v=ocKETcdpWtE" target="_blank">Crawl: respiração e coordenação — Sikana Natação</a></li>
+          <li><strong>Drill "catch-up"</strong> — esperar o braço da frente completar a extensão antes do outro iniciar; melhora o alongamento e o deslize</li>
+          <li><strong>Natação com punho fechado</strong> — 4×18m; força o aluno a sentir a água com o antebraço, melhorando o "pegue"</li>
+          <li><strong>Braçada com aletas</strong> — 2×18m; aletas elevam o quadril e permitem ao aluno focar exclusivamente na braçada sem se preocupar com a perna</li>
+          <li><strong>Foco na posição da cabeça</strong> — 2×18m lembrando de manter a cabeça neutra, apenas virando para respirar, não levantando</li>
+        </ul>
+
+        <div class="phase-title">Séries de Crawl</div>
+        <ul class="exercise-list inter">
+          <li><strong>4×18m com foco em rotação</strong> — professor pede que o aluno sinta o quadril rotacionar a cada braçada; ombro do braço que puxa deve emergir levemente<br><a class="video-link" href="https://www.youtube.com/watch?v=8ZLIyO_GrDQ" target="_blank">Respiração do crawl — dicas avançadas</a></li>
+          <li><strong>Respiração bilateral</strong> — 2×18m respirando a cada 3 braçadas alternando os lados; corrige desequilíbrios laterais</li>
+          <li><strong>Progressivo 3×18m</strong> — cada série mais rápida que a anterior; perceber como a técnica muda com o aumento de intensidade</li>
+          <li><strong>Crawl + virada</strong> — 4×18m com virada aberta ou olímpica; integrar a habilidade da semana anterior</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-advanced">🔴</div>
+        <div class="level-info"><div class="level-name">Avançado</div><div class="level-desc">Boa técnica, foco em eficiência e velocidade</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Drills de Eficiência</div>
+        <ul class="exercise-list advanced">
+          <li><strong>DPS (distância por braçada)</strong> — contar braçadas por 18m e tentar reduzir o número sem perder velocidade; anotar o resultado<br><a class="video-link" href="https://www.youtube.com/watch?v=ChqLLX3uadE" target="_blank">Natação iniciantes — posição de nado e flecha</a></li>
+          <li><strong>Natação com aletas</strong> — 4×18m; melhora posição, aumenta sensação de velocidade e ensina o quadril alto</li>
+          <li><strong>Drill "high elbow underwater"</strong> — cotovelo alto sob a água na fase de puxada; estagiário observa de cima e dá feedback</li>
+          <li><strong>Natação com palmar</strong> — 4×18m com palmar nas mãos; aumenta a superfície de propulsão e melhora o "pegue"</li>
+          <li><strong>Swim golf</strong> — somar tempo (segundos) + nº de braçadas por 18m; o menor score = maior eficiência</li>
+        </ul>
+
+        <div class="phase-title">Séries de Volume e Velocidade</div>
+        <ul class="exercise-list advanced">
+          <li><strong>Pirâmide adaptada</strong> — 18 / 36 / 54 / 36 / 18m com 20s de descanso entre cada; intensidade moderada-alta</li>
+          <li><strong>6×9m sprints</strong> — máxima velocidade em meia piscina; 30s de descanso entre cada; foco em reação e aceleração</li>
+          <li><strong>4×36m (2 piscinas)</strong> — nadar as duas piscinas sem parar com virada em cada ponto; descanso de 30s</li>
+          <li><strong>Perseguição</strong> — dois alunos avançados: o segundo sai 5s depois tentando alcançar o primeiro; motivador e competitivo</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <div class="tip-box-title">💡 Dicas Professor & Estagiário</div>
+    <ul>
+      <li>O erro nº 1 do iniciante no crawl é levantar a cabeça para respirar. Demonstre deitado na borda lateral: mostre a rotação com o rosto quase colado ao chão.</li>
+      <li>Estagiário: andar na beira da raia acompanhando o iniciante e dar feedback em tempo real. "Mantém a cabeça!" funciona melhor que explicação técnica.</li>
+      <li>Para intermediários: grave 10 segundos de vídeo da braçada e mostre para o aluno — o impacto na autoconsciência é enorme.</li>
+      <li>Piscina de 18m: os avançados podem usar 2 ou 3 piscinas por série (36–54m), o que equivale a aproximadamente 50m em termos de esforço cardiorrespiratório.</li>
+      <li>Coloque iniciantes nas primeiras raias, avançados nas últimas. Você circula; estagiário fica fixo com iniciantes durante séries dos avançados.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================== SEMANA 3: PEITO ============================== -->
+<div class="week-panel" id="week-2">
+  <div class="week-header" data-icon="🐸">
+    <div class="week-num">Semana 3 · 2026</div>
+    <div class="week-title">Nado Peito</div>
+    <div class="week-dates">Foco em sincronismo, perna de rã e deslize</div>
+    <div class="week-goal"><strong>Objetivo:</strong> Desenvolver a coordenação entre puxada de braços, respiração e perna de peito, priorizando o deslize e o timing correto para ganho de eficiência.</div>
+    <div class="pool-note">🏊 Piscina 18m — meias piscinas (9m) são ideais para isolar fases do movimento no início da semana</div>
+  </div>
+
+  <div class="structure-bar">
+    <div class="struct-item"><span class="struct-time">10'</span><span class="struct-label">Aquecimento</span></div>
+    <div class="struct-item"><span class="struct-time">15'</span><span class="struct-label">Drill de pernas</span></div>
+    <div class="struct-item"><span class="struct-time">20'</span><span class="struct-label">Foco peito</span></div>
+    <div class="struct-item"><span class="struct-time">5'</span><span class="struct-label">Volta à calma</span></div>
+  </div>
+
+  <div class="levels-container">
+
+    <div class="level-card open">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-beginner">🟢</div>
+        <div class="level-info"><div class="level-name">Iniciante</div><div class="level-desc">Não conhece a perna de peito ou confunde com pedalada alternada</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Aprendendo a Perna de Peito</div>
+        <ul class="exercise-list beginner">
+          <li><strong>Perna na borda fora d'água</strong> — deitado de barriga para cima na beira, estagiário guia os pés: flexionar, abrir, fechar e esticar; 3× de 10 repetições<br><a class="video-link" href="https://youtube.com/watch?v=cBkOCwvJ984" target="_blank">Como aprender a pernada de peito — Canal Nada Mais</a></li>
+          <li><strong>Perna de peito com prancha (9m)</strong> — foco total na perna; braços seguram a prancha à frente; estagiário observa os joelhos (não devem abrir mais que a largura dos ombros)</li>
+          <li><strong>Perna de peito com prancha (18m)</strong> — progressão quando dominar os 9m; aumentar ritmo na segunda metade</li>
+          <li><strong>Perna de costas com prancha</strong> — de costas, ver os próprios pés fazendo o movimento; a visão direta facilita a autocorreção</li>
+          <li><strong>Perna em posição vertical</strong> — segurar a borda de lado, pernas para baixo, fazer o ciclo de peito; sentir a propulsão para cima</li>
+        </ul>
+
+        <div class="phase-title">Introduzindo os Braços</div>
+        <ul class="exercise-list beginner">
+          <li><strong>Braçada parado na borda</strong> — pés no fundo, simular a puxada circular + respiração (puxar → erguer cabeça → expirar → mergulhar); 10 repetições<br><a class="video-link" href="https://www.youtube.com/watch?v=akluwHg7X3s" target="_blank">Nado peito — técnica completa para iniciantes</a></li>
+          <li><strong>Peito só braços com flutuador</strong> — 2×9m; tirar a preocupação com a perna para focar no timing da respiração</li>
+          <li><strong>Peito completo com pausa</strong> — nadar, parar, esperar flutuar, nadar de novo; desenvolve percepção do deslize e do ritmo</li>
+          <li><strong>Peito 18m contando ciclos</strong> — quantos ciclos completos o aluno faz em 18m? Tentar manter o número estável entre as séries</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-inter">🟡</div>
+        <div class="level-info"><div class="level-name">Intermediário</div><div class="level-desc">Sabe o movimento mas sem sincronismo ou deslize adequado</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Drills de Sincronismo</div>
+        <ul class="exercise-list inter">
+          <li><strong>2 pernas / 1 braçada</strong> — ciclo de perna dobrado, depois 1 braçada; ajuda a separar e sentir cada fase<br><a class="video-link" href="https://www.youtube.com/watch?v=4X9W9dwe3SM" target="_blank">4 dicas para melhorar o nado peito — Canal Nada Mais</a></li>
+          <li><strong>Peito com aletas</strong> — 4×18m; aletas forçam o deslize e melhoram a sensação de propulsão das pernas</li>
+          <li><strong>Contagem em voz alta</strong> — aluno fala "perna... braço... deslize" enquanto nada; estagiário ouve e confirma o timing</li>
+          <li><strong>Drill de braços em pé</strong> — dentro d'água em pé, simular a puxada circular com velocidade crescente; perceber o ponto de maior propulsão</li>
+          <li><strong>Foco no cotovelo alto</strong> — na puxada, cotovelos devem ficar altos e dentro da linha dos ombros; não deixar abrir para os lados</li>
+        </ul>
+
+        <div class="phase-title">Séries de Peito</div>
+        <ul class="exercise-list inter">
+          <li><strong>6×18m peito</strong> — descanso 20s; foco em não cortar o deslize; professor conta os ciclos e compara com série anterior<br><a class="video-link" href="https://www.youtube.com/watch?v=jLx8URE0Ai8" target="_blank">O segredo para melhorar o nado peito</a></li>
+          <li><strong>2×36m peito contínuo</strong> — manter ritmo constante nas duas piscinas; a virada é aberta (toque com as duas mãos)</li>
+          <li><strong>Combinado 54m</strong> — 18m pernas / 18m braços / 18m peito completo; reforça cada fase de forma isolada antes do nado completo</li>
+          <li><strong>Progressivo 3×18m</strong> — cada série levemente mais rápida; observar se a técnica se mantém com o aumento de intensidade</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-advanced">🔴</div>
+        <div class="level-info"><div class="level-name">Avançado</div><div class="level-desc">Peito técnico, foco em velocidade e saída subaquática</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Drills de Potência</div>
+        <ul class="exercise-list advanced">
+          <li><strong>Peito com puxador / elástico de resistência</strong> — prender elástico na borda, nadar contra a resistência por 9m; trabalha força explosiva de perna e braço<br><a class="video-link" href="https://www.youtube.com/watch?v=jLx8URE0Ai8" target="_blank">Segredo para melhorar o peito — técnica avançada</a></li>
+          <li><strong>Perna de peito em posição vertical</strong> — dentro d'água, pernas fazem ciclos de peito para se manter na superfície; 3× de 30s</li>
+          <li><strong>Saída subaquática de peito</strong> — após virada ou saída de bloco, 1 braçada subaquática longa + ondulação antes de emergir (regra técnica real de competição)</li>
+          <li><strong>Perna de peito só (braços ao lado do corpo)</strong> — 4×18m; força o aluno a usar a propulsão das pernas sem apoio dos braços</li>
+          <li><strong>Peito com snorkel</strong> — tirar a respiração da equação; foco total na puxada e no timing do corpo</li>
+        </ul>
+
+        <div class="phase-title">Séries de Velocidade</div>
+        <ul class="exercise-list advanced">
+          <li><strong>8×9m peito sprint</strong> — meia piscina em máxima velocidade; 30s de descanso; foco em explosão de saída de cada ciclo</li>
+          <li><strong>2×54m peito por tempo</strong> — 3 piscinas cronometradas; aluno tenta igualar ou superar o tempo da segunda série</li>
+          <li><strong>Medley parcial</strong> — 36m peito + 36m crawl em ritmo forte; manter o ritmo na transição dos nados</li>
+          <li><strong>Série decrescente</strong> — 36m / 18m / 9m com 20s de descanso; a intensidade aumenta à medida que a distância diminui</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <div class="tip-box-title">💡 Dicas Professor & Estagiário</div>
+    <ul>
+      <li>Peito é o nado com mais variações de erro. Foque em uma coisa por aula: hoje a perna, amanhã o timing da respiração, depois o deslize.</li>
+      <li>Erro clássico do intermediário: braços abrem demais lateralmente. Mostre que a puxada é para dentro (em V), não para os lados.</li>
+      <li>Estagiário pode mergulhar e observar a perna do aluno de baixo d'água — a visão subaquática é incrivelmente valiosa para um feedback preciso.</li>
+      <li>Para avançados, cronometre sem avisar antes — o elemento surpresa aumenta o engajamento e esforço real.</li>
+      <li>Na piscina de 18m, a virada de peito exige toque simultâneo com as duas mãos — bom momento para trabalhar isso com os avançados.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================== SEMANA 4: BORBOLETA ============================== -->
+<div class="week-panel" id="week-3">
+  <div class="week-header" data-icon="🦋">
+    <div class="week-num">Semana 4 · 2026</div>
+    <div class="week-title">Nado Borboleta</div>
+    <div class="week-dates">Foco em ondulação corporal e timing respiratório</div>
+    <div class="week-goal"><strong>Objetivo:</strong> Introduzir ou aperfeiçoar o borboleta com ênfase na ondulação do tronco e sincronismo braços–pernas. É o nado mais exigente fisicamente — a progressão deve ser sempre respeitada.</div>
+    <div class="pool-note">🏊 Piscina 18m — iniciantes: usar trechos de 9m (meia piscina); avançados: acumular 36–54m por série</div>
+  </div>
+
+  <div class="structure-bar">
+    <div class="struct-item"><span class="struct-time">10'</span><span class="struct-label">Aquecimento</span></div>
+    <div class="struct-item"><span class="struct-time">15'</span><span class="struct-label">Ondulação / perna</span></div>
+    <div class="struct-item"><span class="struct-time">20'</span><span class="struct-label">Borboleta técnico</span></div>
+    <div class="struct-item"><span class="struct-time">5'</span><span class="struct-label">Volta à calma</span></div>
+  </div>
+
+  <div class="levels-container">
+
+    <div class="level-card open">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-beginner">🟢</div>
+        <div class="level-info"><div class="level-name">Iniciante</div><div class="level-desc">Nunca fez borboleta — foco absoluto em ondulação corporal</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Aprendendo a Ondular</div>
+        <ul class="exercise-list beginner">
+          <li><strong>Ondulação na borda</strong> — de pé na água, cotovelos na beira, mover o quadril para cima e para baixo como uma onda; o movimento começa no peito, não nos quadris<br><a class="video-link" href="https://www.youtube.com/watch?v=r0V8mVqXyqU" target="_blank">Nado borboleta — coordenação e ritmo de pernada</a></li>
+          <li><strong>Dolphin kick com aletas (9m)</strong> — braços estendidos à frente, corpo ondula como golfinho com ajuda das aletas; 4×9m com descanso generoso</li>
+          <li><strong>Dolphin kick de costas com aletas</strong> — de costas, pernas juntas fazem pedalada de borboleta; o aluno vê os próprios joelhos e corrige mais facilmente</li>
+          <li><strong>Dolphin kick sem aletas (9m)</strong> — quando ganhar confiança, tentar sem aletas; perceber o esforço adicional exigido</li>
+          <li><strong>Ondulação subaquática</strong> — fazer o dolphin kick completamente subaquático por 5m; ótimo para desenvolver o core</li>
+        </ul>
+
+        <div class="phase-title">Introduzindo os Braços</div>
+        <ul class="exercise-list beginner">
+          <li><strong>Braçada fora d'água na borda</strong> — de pé, simular o círculo dos braços; foco em entrar com os polegares levemente inclinados para baixo<br><a class="video-link" href="https://www.youtube.com/watch?v=11lyT2HZyM0" target="_blank">Como nadar borboleta do zero — passo a passo</a></li>
+          <li><strong>1 braçada + 2 pernadas</strong> — dar uma braçada e voltar a ondular sem exigir sequência completa; sentir o ritmo antes de exigir continuidade</li>
+          <li><strong>Borboleta com aletas 9m</strong> — aletas aliviam o esforço de perna; o aluno foca em sentir a coordenação do movimento completo</li>
+          <li><strong>Borboleta por trecho curto</strong> — 3× de 5m de borboleta seguido de 13m de crawl; o aluno não se cansa antes de aprender</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-inter">🟡</div>
+        <div class="level-info"><div class="level-name">Intermediário</div><div class="level-desc">Faz borboleta mas perde o ritmo ou a respiração rapidamente</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Drills de Ritmo</div>
+        <ul class="exercise-list inter">
+          <li><strong>Borboleta com snorkel</strong> — sem preocupação com respiração, foco total em manter ondulação e braçada simultânea<br><a class="video-link" href="https://www.youtube.com/watch?v=8zLNN3FyHPk" target="_blank">Nado borboleta — técnica completa em slow motion</a></li>
+          <li><strong>1 braçada borboleta / 2 crawl</strong> — drill de transição; mantém ritmo sem exaustão e reforça a ondulação no momento certo</li>
+          <li><strong>Séries curtas qualitativas</strong> — 8×9m com descanso de 45s; qualidade sempre acima de quantidade no borboleta</li>
+          <li><strong>Perna isolada com prancha vertical</strong> — prancha posicionada verticalmente à frente aumenta resistência; 4×9m; trabalha potência de dolphin kick</li>
+          <li><strong>Contagem de ciclos</strong> — quantos ciclos completos o aluno faz em 18m? Tentar manter ou reduzir esse número</li>
+        </ul>
+
+        <div class="phase-title">Aperfeiçoando o Timing</div>
+        <ul class="exercise-list inter">
+          <li><strong>Respiração a cada 2 braçadas</strong> — não respirar em todas; melhora a posição do corpo e o ritmo geral<br><a class="video-link" href="https://www.youtube.com/watch?v=soYYXpnAEfk" target="_blank">Nado borboleta — dicas Gustavo Borges</a></li>
+          <li><strong>Foco na entrada dos braços</strong> — entrar com as mãos na largura dos ombros, polegares levemente inclinados; quem entra com as mãos muito abertas perde propulsão</li>
+          <li><strong>4×18m borboleta</strong> — descanso 40s; professor faz 1 feedback específico por série (ex: "hoje foco na cabeça baixa")</li>
+          <li><strong>Borboleta + crawl 36m</strong> — 18m borboleta + 18m crawl sem parar; treinar manter o ritmo cardíaco na transição</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-advanced">🔴</div>
+        <div class="level-info"><div class="level-name">Avançado</div><div class="level-desc">Boa técnica, foco em manutenção da amplitude e fase subaquática</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Drills de Potência</div>
+        <ul class="exercise-list advanced">
+          <li><strong>Perna de borboleta com prancha vertical</strong> — prancha em posição vertical à frente, maior resistência; 4×9m<br><a class="video-link" href="https://www.youtube.com/watch?v=dip5xJcKC-g" target="_blank">Aprenda o nado borboleta — educativos completos</a></li>
+          <li><strong>Séries de perna isolada</strong> — 6×18m só perna (braços ao longo do corpo); altíssima exigência de core e resistência de quadril</li>
+          <li><strong>Dolphin kick subaquático pós-saída</strong> — 5–8 ciclos após cada largada ou virada antes de emergir; aproveitar o máximo da fase subaquática</li>
+          <li><strong>Perna de borboleta lateral</strong> — nadar de lado com perna de borboleta; exercício avançado de consciência corporal</li>
+          <li><strong>Borboleta com snorkel + palmar</strong> — combinar os dois; máxima carga técnica de braçada sem preocupação com respiração</li>
+        </ul>
+
+        <div class="phase-title">Séries de Volume</div>
+        <ul class="exercise-list advanced">
+          <li><strong>4×36m borboleta</strong> — descanso de 60s; manter a técnica até o fim das duas piscinas<br><a class="video-link" href="https://www.youtube.com/watch?v=8zLNN3FyHPk" target="_blank">Borboleta técnica completa — análise em slow motion</a></li>
+          <li><strong>Medley individual 72m</strong> — 18m borboleta / 18m costas / 18m peito / 18m crawl; sequência oficial adaptada à piscina de 18m</li>
+          <li><strong>Borboleta + crawl alternado</strong> — 4×36m alternando 18m de cada; manutenção de ritmo alto nas transições</li>
+          <li><strong>Desafio do 18m sem respirar</strong> — nadar os 18m de borboleta sem respirar; para quem domina bem o nado</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <div class="tip-box-title">💡 Dicas Professor & Estagiário</div>
+    <ul>
+      <li>Nunca force um iniciante a nadar borboleta por mais de 9m (meia piscina) seguidos na primeira aula — é desmotivador e gera técnica ruim imediatamente.</li>
+      <li>O erro mais comum: aluno "quebra" no quadril em vez de ondular de peito a pé. Demonstre: o movimento começa no esterno, não na cintura.</li>
+      <li>Estagiário: fique de olho em quem está forçando demais. Borboleta com exaustão = técnica que desmorona. Mande descansar antes que o aluno peça.</li>
+      <li>Alunos avançados entediados: proponha o desafio do 18m sem respirar, ou 4×9m de dolphin kick subaquático.</li>
+      <li>Piscina de 18m ajuda os iniciantes: a meia piscina (9m) é o trecho ideal para borboleta no início — dá para descansar antes de se cansar demais.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================== SEMANA 5: COSTAS ============================== -->
+<div class="week-panel" id="week-4">
+  <div class="week-header" data-icon="⭐">
+    <div class="week-num">Semana 5 · 2026</div>
+    <div class="week-title">Nado Costas</div>
+    <div class="week-dates">Foco em rotação, posição do quadril e braçada alternada</div>
+    <div class="week-goal"><strong>Objetivo:</strong> Desenvolver o nado costas com foco na posição correta do corpo (quadril alto), rotação dos ombros e coordenação braço-perna. Nado especialmente benéfico para alunos com questões posturais.</div>
+    <div class="pool-note">🏊 Piscina 18m — o costas se beneficia muito de séries longas; avançados podem trabalhar 4–6 piscinas seguidas (72–108m)</div>
+  </div>
+
+  <div class="structure-bar">
+    <div class="struct-item"><span class="struct-time">10'</span><span class="struct-label">Aquecimento</span></div>
+    <div class="struct-item"><span class="struct-time">15'</span><span class="struct-label">Posição / perna</span></div>
+    <div class="struct-item"><span class="struct-time">20'</span><span class="struct-label">Costas técnico</span></div>
+    <div class="struct-item"><span class="struct-time">5'</span><span class="struct-label">Volta à calma</span></div>
+  </div>
+
+  <div class="levels-container">
+
+    <div class="level-card open">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-beginner">🟢</div>
+        <div class="level-info"><div class="level-name">Iniciante</div><div class="level-desc">Tem medo de ficar de costas na água ou afunda o quadril</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Confiança na Posição</div>
+        <ul class="exercise-list beginner">
+          <li><strong>Flutuação de costas assistida</strong> — estagiário apoia as costas e o pescoço do aluno; professor instrui a relaxar os ombros e encher o peito de ar; 3× de 15s<br><a class="video-link" href="https://www.youtube.com/watch?v=tRNaKZ3qI3c" target="_blank">Nado costas para iniciantes — aula completa</a></li>
+          <li><strong>Estrela de costas</strong> — braços abertos, pernas abertas, flutuar sem se mover; 3× por 15s; estagiário fica próximo mas sem tocar</li>
+          <li><strong>Kickboard no abdômen</strong> — aluno segura a prancha sobre a barriga enquanto flutua de costas; âncora de confiança e referência de posição horizontal</li>
+          <li><strong>Flutuação com empurrão leve</strong> — estagiário dá um leve impulso para o aluno deslizar de costas até a parede; sensação de movimento sem esforço</li>
+          <li><strong>Respiração de costas parado</strong> — de costas flutuando, respirar normalmente; perceber que é possível respirar confortavelmente nessa posição</li>
+        </ul>
+
+        <div class="phase-title">Primeiras Braçadas de Costas</div>
+        <ul class="exercise-list beginner">
+          <li><strong>Perna de costas com prancha no peito</strong> — prancha segura sobre o peito, pernas fazem crawl de costas; 4×9m; foco em pés que "chutam" para cima<br><a class="video-link" href="https://www.youtube.com/watch?v=9aEewSacB8s" target="_blank">Costas: método básico — Sikana Natação</a></li>
+          <li><strong>Um braço só (9m)</strong> — um braço nada, o outro fica ao longo do corpo; aluno vê o braço saindo da água e entrando atrás da cabeça</li>
+          <li><strong>Costas completo com pausa (9m)</strong> — a cada 3 braçadas, parar e verificar a posição do quadril; estagiário observa de cima e diz se está afundando</li>
+          <li><strong>Costas 18m contínuo</strong> — tentar completar a piscina inteira sem parar; objetivo da semana para o iniciante</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-inter">🟡</div>
+        <div class="level-info"><div class="level-name">Intermediário</div><div class="level-desc">Nada de costas mas sem rotação de ombros ou com quadril baixo</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Drills de Rotação</div>
+        <ul class="exercise-list inter">
+          <li><strong>Drill "rotação de barril"</strong> — nadar de costas exagerando a rotação do tronco; ombro quase sai da água a cada braçada; 4×9m<br><a class="video-link" href="https://www.youtube.com/watch?v=jerFt8vybfk" target="_blank">Nado costas — 13 exercícios e erros mais comuns</a></li>
+          <li><strong>Costas com uma mão no bolso</strong> — nadar com um braço só por 18m; força a rotação natural do corpo para compensar</li>
+          <li><strong>Foco na entrada do braço</strong> — mão entra na água com o polegar acima (braço rodado), sai com o mindinho acima; professor corrige quem entra com o ombro em queda</li>
+          <li><strong>Costas com aletas</strong> — 4×18m; as aletas elevam o quadril automaticamente; o aluno sente a posição correta e aprende a reproduzi-la</li>
+          <li><strong>Drill de braço na orelha</strong> — no momento em que o braço sobe, tocar a orelha; trabalha o trajeto aéreo correto do braço</li>
+        </ul>
+
+        <div class="phase-title">Séries de Costas</div>
+        <ul class="exercise-list inter">
+          <li><strong>6×18m costas</strong> — descanso 20s; professor cronometra e informa o tempo ao aluno após cada série<br><a class="video-link" href="https://www.youtube.com/watch?v=41u_sNk2tXI" target="_blank">Guia completo do nado costas — resumão</a></li>
+          <li><strong>Costas + crawl alternado</strong> — 4×36m (18 costas / 18 crawl); manter cadência de pernas na transição</li>
+          <li><strong>Copo plástico na testa</strong> — objeto leve apoiado na testa enquanto nada costas; se cair, o aluno perdeu a estabilidade da cabeça — exercício lúdico e eficaz</li>
+          <li><strong>Costas progressivo</strong> — 3×18m saindo a 60% e chegando a 85%; observar onde a técnica começa a desmoronar</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-card">
+      <div class="level-header" onclick="toggleLevel(this)">
+        <div class="level-badge badge-advanced">🔴</div>
+        <div class="level-info"><div class="level-name">Avançado</div><div class="level-desc">Bom costas, foco em saída específica e velocidade</div></div>
+        <span class="level-chevron">▼</span>
+      </div>
+      <div class="level-body">
+        <div class="phase-title">Drills de Potência</div>
+        <ul class="exercise-list advanced">
+          <li><strong>Costas com aletas + palmar</strong> — combinar os dois equipamentos; máxima velocidade e posição para treinar a sensação de nado rápido<br><a class="video-link" href="https://www.youtube.com/watch?v=WOMBxm0qh2s" target="_blank">Nado costas — técnica da braçada detalhada</a></li>
+          <li><strong>Pernas de costas segurando prancha acima do peito</strong> — 6×18m; isola a perna e trabalha força de kick em posição de alta resistência</li>
+          <li><strong>Saída específica de costas</strong> — pés na parede, corpo inclinado, impulso e dolphin kick subaquático de costas; 6 saídas cronometradas</li>
+          <li><strong>Costas com resistência (elástico)</strong> — nadar contra a resistência por 9m, depois soltar e sentir a aceleração; treina potência e consciência de velocidade</li>
+          <li><strong>Braçada com contagem DPS</strong> — contar braçadas por 18m e tentar reduzir mantendo ou aumentando a velocidade</li>
+        </ul>
+
+        <div class="phase-title">Séries de Volume</div>
+        <ul class="exercise-list advanced">
+          <li><strong>Medley 72m</strong> — 18m borboleta / 18m costas / 18m peito / 18m crawl; revisar todos os nados das semanas anteriores<br><a class="video-link" href="https://www.youtube.com/watch?v=aanVR28klLo" target="_blank">Nado costas — técnica completa em slow motion</a></li>
+          <li><strong>8×9m costas sprint</strong> — saída de costas, máxima velocidade, 25s de descanso; foco em tempo de reação e explosão de impulso</li>
+          <li><strong>4×54m costas</strong> — 3 piscinas seguidas de costas; descanso de 40s; treino de resistência e manutenção de técnica no cansaço</li>
+          <li><strong>Costas + virada olímpica de costas</strong> — treinar a virada específica (giro para trás) antes de continuar; integrar técnica de virada com o nado</li>
+          <li><strong>Cronometragem comparativa</strong> — 18m costas no início e no fim da semana; mostrar ao aluno a evolução concreta</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <div class="tip-box-title">💡 Dicas Professor & Estagiário</div>
+    <ul>
+      <li>Medo de ficar de costas é real — valide o sentimento e nunca apresse. A flutuação assistida com suporte no pescoço funciona muito bem para adultos.</li>
+      <li>Quadril afundando: peça que o aluno imagine que está deitado em uma maca suspensa no ar. Ajuda imensamente na consciência postural.</li>
+      <li>Para intermediários: o exercício do copo plástico na testa é simples, visual e gera autocorreção imediata — ótimo para turmas grandes.</li>
+      <li>Alunos avançados com lombalgia se beneficiam muito do costas — vale mencionar isso como motivação adicional para caprichar na semana.</li>
+      <li>Orientação na piscina: no costas, o aluno não vê para onde vai. Ensine a contar as braçadas (em 18m geralmente 12–16 braçadas para intermediários) para se orientar sem virar a cabeça.</li>
+    </ul>
+  </div>
+</div>
+
+</main>
+
+<script>
+  function showWeek(index) {
+    document.querySelectorAll('.week-panel').forEach((p, i) => p.classList.toggle('active', i === index));
+    document.querySelectorAll('.week-btn').forEach((b, i) => b.classList.toggle('active', i === index));
+  }
+  function toggleLevel(header) {
+    header.parentElement.classList.toggle('open');
+  }
+</script>
+</body>
+</html>
